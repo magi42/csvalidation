@@ -1,0 +1,54 @@
+/*****************************************************************************
+ * ValidatedTextField
+ *****************************************************************************/
+
+/* Invalid value. */
+.v-textfield-focus.invalid,
+.v-textfield.invalid,
+.v-textarea-focus.invalid,
+.v-textarea.invalid {
+	background: #ff8080;
+}
+
+/* Focus and valid value. */
+.v-textfield-focus.valid,
+.v-textarea-focus.valid {
+    background: #ffffc0;
+}
+
+/* Out of focus and partially valid value. */
+.v-textfield.partial,
+.v-textarea.partial {
+    background: #ff8080; /* An error situation. */
+}
+
+/* Focus and partially valid value.      */
+/* Must be after the out-of-focus style. */
+.v-textfield-focus.partial,
+.v-textarea-focus.partial {
+    background: #ffd0d0;
+}
+
+.csvalidator-message {
+    padding: 5px;
+    display: inline-block;
+    vertical-align: bottom;
+}
+
+.csvalidator-errormessage {
+    color: red;
+}
+
+input.v-textfield-prompt {
+  color:#999999;
+  font-style:normal;
+}
+
+/*****************************************************************************
+ * JavaScriptEditor
+ *****************************************************************************/
+
+/* Editor field cell alignment. */ 
+.v-javascripteditor tr {
+	vertical-align: top;
+}

@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<title>Client-Side Validation for Vaadin</title>
+<style type="text/css">
+
+body {
+    background: red;
+}
+
+div#content {
+    border: thick solid black;
+    background: white;
+    width: 800px;
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 10px;
+}
+
+pre {
+	border: thin solid;
+	background: #f0f0f0;
+	margin-left: 20px;
+	margin-right: 20px;
+	padding: 5px;
+}
+</style>
+</head>
+<body>
+
+<div id="content">
+
+<h1>Client-Side Validation for Vaadin</h1>
+
+<p>The <b>CSValidationTextField</b> (suggestions for a better name
+are welcome) is an extension of the regular <b>TextField</b>. It can
+validate the user input with a regular expression and/or a JavaScript
+program. It can report invalid input with style and error message, or
+prevent typing invalid input altogether.</p>
+
+<ul>
+	<li><a href="demo/">The Demo</a> (editors, some validation examples)</li>
+	<li><a href="doc/api/">API Documentation</a></li>
+    <li><a href="http://dev.vaadin.com/browser/incubator/csvalidation/">Browse Sources</a></li>
+    <li><a href="http://dev.vaadin.com/browser/incubator/csvalidation/src/com/vaadin/csvalidation/examples">Example Source Code</a></li>
+    <li><a href="http://vaadin.com/directory#addon/11">Download</a> the JAR from Vaadin Directory</li>	
+</ul>
+
+<h2>Installation</h2>
+
+<p>The Client-Side Validation (<tt>csvalidation</tt>) components require Vaadin 6.2 or later.</p>
+
+<p>Download the csvalidation-&lt;version&gt;.jar and put
+it in your library folder in your class path, typically in <tt>WebContent/WEB-INF/lib</tt>.</p>
+
+<p><b>Notice</b>: The Vaadin Plugin for Eclipse may suggest to rebuild
+the widget set. You have to answer <b>Yes</b> and build a new widget set if:</p>
+
+<ul>
+    <li><p>you have a custom widget set in your project, or</p></li>
+
+    <li><p>you include other widget JARs in your project, or</p></li>
+
+    <li><p>the precompiled widget set is incompatible with the Vaadin
+    that you use in your project. The widget set in the Jar contains a
+    compiled client-side engine of Vaadin, which will otherwise override
+    the one included in the Vaadin Jar. If the client-side engine is
+    incompatible with the server-side API, it will malfunction. Even if the
+    precompiled widget set works, it may still be older than the
+    client-side engine in the Vaadin Jar.</p></li>
+</ul>
+
+Say <b>No</b>
+if the above conditions do not apply, as this will be a bit easier.
+Otherwise the plugin will create an unnecessary widget set for your
+project and compile the widget set already included in the
+<tt>csvalidation.jar</tt> unnecessarily.</p> In this case, the plugin does not automatically update the
+<tt>WebContent/WEB-INF/web.xml</tt>
+descriptor of your project to include the widget set, and you need to
+add the following yourself:
+</p>
+
+<pre>
+&lt;servlet&gt;
+    ...
+    &lt;init-param&gt;
+        &lt;description&gt;Application widgetset&lt;/description&gt;
+        &lt;param-name&gt;widgetset&lt;/param-name&gt;
+        &lt;param-value&gt;com.vaadin.csvalidation.widgetset.CSValidationWidgetset&lt;/param-value&gt;
+    &lt;/init-param&gt;
+&lt;/servlet&gt;
+</pre>
+
+<p>If you answer <b>Yes</b>, the plugin will create a new widget set
+for the project, or use an existing one, and add the following line in
+its <tt>.gwt.xml</tt> descriptor:</p>
+
+<pre>
+    &lt;inherits name="com.vaadin.csvalidation.widgetset.CSValidationWidgetset" /&gt;
+</pre>
+
+<p>The plugin will then compile the widget set.</p>
+
+<h2>Notes</h2>
+
+<p>You can't trust the client-side code for validation,
+so you need to validate the input on the server-side as well. For
+regular expression validation, you can usually use the same expression for the
+server-side <b>RegexpValidator</b> (just remember that the regular
+expressions in Java and JavaScript have slightly different syntax). For
+example:</p>
+
+<pre>
+// The Finnish Social Security Number
+final CSValidatedTextField ssn = new CSValidatedTextField("SSN");
+String ssn_regexp = "[0-9]{6}[+-A][0-9]{3}[0-9a-zA-Z]";
+
+// The client-side validation
+ssn.setRegExp(ssn_regexp, "000000-000A"); // Must give padding
+ssn.setPreventInvalidTyping(true); // Prevent typing invalid values
+
+// The server-side validation
+ssn.addValidator(new RegexpValidator(ssn_regexp, "Invalid SSN"));
+ssn.setRequired(true);
+ssn.setRequiredError("SSN is required");
+
+form.addField("ssn", ssn);
+</pre>
+
+<p>You can validate with JavaScript just as easily:</p>
+
+<pre>
+CSValidatedTextField postcode = new CSValidatedTextField("Postal Code");
+postcode.setJavaScript("if (value >= 0 && value < 10000)" +
+                       "    \"partial\";" +
+                       "else if (value >= 10000 && value <= 99999)" +
+                       "    null;" +
+                       "else" +
+                       "    \"Postal Code must be a 5-digit number between 10000 and 99999\";");
+layout.addComponent(postcode);
+</pre>
+
+<p>The server-side validation needs separate Java code though,
+unless you use some JavaScript execution library.</p>
+
+<p>See the example source codes (link above) for more examples.</p>
+
+<p>Included are also handy interactive editors for the regular
+expressions and JavaScript validators, as you can see in the demo.</p>
+
+<h2>Issues</h2>
+
+<ul>
+	<li><p>Matching partially filled values with regular expressions is a
+	problem with no known solution. If you disallow typing invalid input,
+	as in the example above, the validation is mostly restricted to
+	fixed-length fields and requires padding to make partial input valid.
+	If you allow invalid input, there are no restrictions and the
+	fixed-length example is not needed.</p></li>
+	
+	<li><p>It would be nice to have a type-over input prompt, such as
+	underscores, under the input text.</p></li>
+	
+	<li><p>The error is now reported with a text span right of the input
+	field. This may not be desired. Alternatives are to use the same error
+	indicator with the error description as tooltip as for server-side
+	errors, or as text below the input box.</p></li>
+
+	<li><p>Not sure of the error field causes problems with the
+	calculation of the component widths.</p></li>
+</ul>
+
+<h2>Change Log</h2>
+
+<h3>Version 0.3.2</h3>
+<ul>
+    <li>Fixed a JavaScript evaluation problem in Safari (and possibly in other browsers as well).</li>
+</ul>
+
+<h3>Version 0.3.1</h3>
+<ul>
+    <li>Added <tt>setValidateEmpty()</tt> method that, when set <tt>true</tt>,
+        forces validation of new fields even when they are empty.</li>
+    <li>Enhanced the demo framework greatly</li>
+</ul>
+
+<h3>Version 0.3.0</h3>
+<ul>
+	<li><b>CSValidatedTextArea</b> for multi-line text area. Setting <tt>setRows()</tt>
+	does not make the regular <b>CSValidatedTextField</b> multi-line, but
+	you have to use this class.</li>
+
+	<li>New "<tt>valid</tt>" and "<tt>partial</tt>" keywords for JavaScript
+	evaluation results that allow specifying a message after the keyword.
+	The valid and partial messages are displayed in the same area as the
+	error messages. This makes creation of various counters, for example,
+	very easy.</li>
+	
+	<li>Validation is now done also for empty fields. This may change the
+	behavior of existing applications.</li>
+	
+	<li>Upgraded repository from Vaadin 6.2.2 to 6.3.1 and from GWT 1.x to GWT 2.0.</li>
+</ul>
+
+<h2>License</h2>
+
+<p>This software is licensed under the Apache 2 License.</p>
+</div>
+
+</body>
+</html>

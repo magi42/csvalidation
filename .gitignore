@@ -1,0 +1,6 @@
+.svn
+build/classes
+build/work
+WebContent/VAADIN/widgetsets
+WebContent/VAADIN/themes/*/styles.css
+WebContent/VAADIN/gwt-unitCache
