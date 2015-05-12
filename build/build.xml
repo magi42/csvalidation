@@ -22,7 +22,7 @@
         <property name="workdir" value="build/work"/>
 
         <!-- Addon version -->
-        <property name="version" value="0.5.2"/>
+        <property name="version" value="0.5.3"/>
 
         <!-- The target name of the built add-on JAR -->
         <property name="target-jar"
@@ -94,10 +94,13 @@
 
         <javac srcdir="${sources}"
                destdir="${workdir}/WEB-INF/classes"
+        	   source="1.6"
+    	       target="1.6"
                includeantruntime="no">
             <classpath>
                 <path refid="classpath.compile"/>
             </classpath>
+        	<compilerarg value="-Xlint:deprecation"/>
         </javac>
 
         <!-- Copy sources -->

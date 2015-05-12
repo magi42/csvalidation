@@ -232,7 +232,7 @@ public class CSValidationUI extends UI {
                             if (csscode != null)
                                 srcContainer.addComponent(new SourceListing("CSS Code", csscode));
                             
-                            if (srcContainer.getComponentIterator().hasNext())
+                            if (srcContainer.iterator().hasNext())
                                 viewlayout.addComponent(srcContainer);
                             
                             getPage().setUriFragment(example.itemid);
