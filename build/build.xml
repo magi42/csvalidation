@@ -21,8 +21,11 @@
         <!-- Compilation work directory -->
         <property name="workdir" value="build/work"/>
 
-        <!-- Addon version -->
-        <property name="version" value="0.5.3"/>
+    	<!-- Add-on widget set name -->
+    	<property name="widgetset" value="org.vaadin.csvalidation.widgetset.CSValidationWidgetset"/>
+
+        <!-- Add-on version -->
+        <property name="version" value="0.5.4"/>
 
         <!-- The target name of the built add-on JAR -->
         <property name="target-jar"
@@ -32,7 +35,7 @@
     <!-- Widget sets to compile -->
     <target name="compile-widgetsets" depends="compile-server-side">
         <antcall target="compile-widgetset">
-            <param name="widgetset" value="org.vaadin.csvalidation.widgetset.CSValidationWidgetset"/>
+            <param name="widgetset" value="${widgetset}"/>
         </antcall>
     </target>
 
