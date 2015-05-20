@@ -19,7 +19,7 @@
   	<init-param>
   		<description>Application widgetset</description>
   		<param-name>widgetset</param-name>
-  		<param-value>org.vaadin.csvalidation.demo.CSValidationDemoWidgetSet</param-value>
+  		<param-value>org.vaadin.csvalidation.demo.CSValidationDemoWidgetset</param-value>
   	</init-param>
   </servlet>
   
