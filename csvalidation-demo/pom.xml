@@ -115,6 +115,15 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- Newer Selenium is needed because of a Firefox problem.        -->
+        <!-- This also makes testing slower, so should be removed when the -->
+        <!-- Problem is fixed in TestBench.                                -->
+	    <dependency>
+	        <groupId>org.seleniumhq.selenium</groupId>
+	        <artifactId>selenium-java</artifactId>
+	        <version>2.45.0</version>
+	    </dependency>
+
         <!-- Needed for running TestBench tests -->
         <dependency>
 			<groupId>junit</groupId>
@@ -122,14 +131,21 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
-
+		
         <!-- Use Jetty for running tests -->
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-webapp</artifactId>
-			<version>7.2.2.v20101205</version>
+			<version>8.1.13.v20130916</version>
 			<scope>test</scope>
 		</dependency>		
+
+        <!-- Jetty likes this newer version -->
+		<dependency>
+		    <groupId>com.ibm.icu</groupId>
+		    <artifactId>icu4j</artifactId>
+		    <version>55.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>
@@ -222,16 +238,81 @@
                 <version>2.18.1</version>                   
             </plugin>
 
+		    <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<version>2.17</version>
+				<configuration>
+					<includes>
+    					<include>**/*Tests.java</include>
+					</includes>
+					<excludes>
+						<!-- Files here might match to naming conventions, but the are just
+						vaadin apps containing your add-on components in various setups. We can ignore
+						them from test. -->
+					</excludes>
+					<!--  <forkCount>10</forkCount> -->
+				</configuration>
+				<executions>
+					<execution>
+						<id>failsafe-integration-tests</id>
+						<phase>integration-test</phase>
+						<goals>
+    						<goal>integration-test</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>failsafe-verify</id>
+						<phase>verify</phase>
+						<goals>
+    						<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
             <!-- Needed for integration tests -->
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
-				<version>8.1.10.v20130312</version>
-				<configuration>
-					<webApp>
-						<contextPath>/</contextPath>
-					</webApp>
+				<version>8.1.16.v20140903</version>
+				
+                <configuration>
+				    <webApp>
+				      <contextPath>/csvalidation-demo</contextPath>
+				    </webApp>
+					<stopKey>STOP</stopKey>
+					<stopPort>8005</stopPort>
+  					<systemProperties>
+					    <!-- 
+						<systemProperty>
+							<name>jetty.port</name>
+							<value>5678</value>
+						</systemProperty>
+						 -->
+					</systemProperties>
 				</configuration>
+                <executions>
+                    <!-- start and stop jetty (running our app) when running integration tests -->
+					<execution>
+						<id>start-jetty</id>
+						<phase>pre-integration-test</phase>
+							<goals>
+							<goal>start</goal>
+						</goals>
+						<configuration>
+							<daemon>true</daemon>
+							<scanIntervalSeconds>0</scanIntervalSeconds>
+						</configuration>
+					</execution>
+					<execution>
+						<id>stop-jetty</id>
+						<phase>post-integration-test</phase>
+						<goals>
+    						<goal>stop</goal>
+						</goals>
+					</execution>
+                </executions>				
 			</plugin>
 		</plugins>
 	
@@ -253,26 +334,9 @@
 	                    <compileReport>true</compileReport>
 	                    <module>org.vaadin.csvalidation.demo.CSValidationDemoWidgetset</module>
 	                    <strict>true</strict>
-	                    <runTarget>http://localhost:8080/</runTarget>
+	                    <runTarget>http://localhost:8080/csvalidation-demo/demo</runTarget>
 	                </configuration>
-	
-	                <executions>
-	                    <!-- You are free to mark this as permanently ignored in Eclipse -->
-	                    <execution>
-	                        <configuration>
-	                            <!-- if you don't specify any modules, the plugin will find them -->
-	                        </configuration>
-	                        <goals>
-	                            <goal>update-widgetset</goal>
-	                            <goal>compile</goal>
-	                        </goals>
-	                    </execution>
-	                </executions>
 	            </plugin>
-
-				<plugin>
-    				<artifactId>maven-surefire-plugin</artifactId>
-    		    </plugin>
 
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
 				<plugin>

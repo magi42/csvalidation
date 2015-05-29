@@ -1,30 +1,43 @@
 package org.vaadin.csvalidation.demo.examples;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.WebElement;
 
-import com.vaadin.testbench.TestBenchTestCase;
+import com.vaadin.testbench.By;
 import com.vaadin.testbench.elements.LabelElement;
+import com.vaadin.testbench.elements.TextFieldElement;
 
-public class BasicTests extends TestBenchTestCase {
-	@Before
-	public void setUp() throws Exception {
-	    setDriver(new FirefoxDriver());
-	}
-
+public class BasicTests extends CSValidationTestCase {
 	@Test
-	public void basic() {
-		getDriver().get("http://localhost:8080/csvalidation-demo/demo");
-		
+	public void smoketest() {
 		LabelElement title = $(LabelElement.class).first();
 		Assert.assertTrue("No title", "Client-Side Validation Demo".equals(title.getText()));
 	}
-	
-	@After
-	public void tearDown() throws Exception {
-	    driver.quit();
+
+	@Test
+	public void numericInput() {
+		selectMenuItem("regexp.numeric");
+
+		WebElement example = findElement(By.className("example"));
+
+		TextFieldElement tf = $(TextFieldElement.class).context(example).first();
+
+		// Before input it should not be valid nor invalid
+		Assert.assertEquals("123", tf.getValue());
+		Assert.assertTrue(!tf.getAttribute("class").contains("valid") && 
+                          !tf.getAttribute("class").contains("invalid"));
+
+		// After this it should be valid
+		tf.sendKeys("456");
+		Assert.assertEquals("123456", tf.getValue());
+		Assert.assertTrue(tf.getAttribute("class").contains("valid") && 
+                         !tf.getAttribute("class").contains("invalid"));
+
+		// After invalid input it should still be valid, but with error
+		tf.sendKeys("abc");
+		Assert.assertEquals("123456", tf.getValue());
+		Assert.assertTrue(tf.getAttribute("class").contains("valid") && 
+                         !tf.getAttribute("class").contains("invalid"));
 	}
 }
