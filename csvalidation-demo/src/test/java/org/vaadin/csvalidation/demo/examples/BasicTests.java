@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.openqa.selenium.WebElement;
 
 import com.vaadin.testbench.By;
+import com.vaadin.testbench.elements.FormLayoutElement;
 import com.vaadin.testbench.elements.LabelElement;
 import com.vaadin.testbench.elements.TextFieldElement;
 
@@ -34,10 +35,15 @@ public class BasicTests extends CSValidationTestCase {
 		Assert.assertTrue(tf.getAttribute("class").contains("valid") && 
                          !tf.getAttribute("class").contains("invalid"));
 
-		// After invalid input it should still be valid, but with error
+		// After invalid input it should still be valid...
 		tf.sendKeys("abc");
 		Assert.assertEquals("123456", tf.getValue());
 		Assert.assertTrue(tf.getAttribute("class").contains("valid") && 
                          !tf.getAttribute("class").contains("invalid"));
+
+		// ...but there should be error displayed
+		FormLayoutElement myForm = $(FormLayoutElement.class).context(example).caption("My Form").first();
+		WebElement errorMessage = myForm.findElement(By.className("csvalidator-errormessage"));
+		Assert.assertEquals("Must be a number", errorMessage.getText());
 	}
 }

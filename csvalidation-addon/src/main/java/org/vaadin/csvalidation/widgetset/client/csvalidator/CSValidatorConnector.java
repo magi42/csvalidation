@@ -83,6 +83,7 @@ public class CSValidatorConnector extends AbstractExtensionConnector
         }*/
         
         Validity validity = validate(field.getText());
+        logger.fine("Validity is " + validity);
 
         if (validity == Validity.VALID) {
             field.addStyleName("valid");

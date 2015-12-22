@@ -27,12 +27,12 @@ public class JavaScriptSSNExample extends CustomComponent implements CSValidatio
         layout.setSpacing(true);
         
         // BEGIN-EXAMPLE: javascript.ssn
-        final TextField ssn = new TextField("SSN");
+        TextField ssn = new TextField("SSN");
         
-        final CSValidator validator = new CSValidator();
+        CSValidator validator = new CSValidator();
         validator.extend(ssn);
         String js = CSValidationUtil.readFile(getClass().getClassLoader(),
-                                                     "/com/vaadin/csvalidation/examples/javascript/ssn-fi.js");
+                "/com/vaadin/csvalidation/examples/javascript/ssn-fi.js");
         validator.setJavaScript(js);
         // END-EXAMPLE: javascript.ssn
 
@@ -40,14 +40,11 @@ public class JavaScriptSSNExample extends CustomComponent implements CSValidatio
 
         // Option for preventing invalid input.
         CheckBox prevent = new CheckBox("Prevent invalid input");
-        prevent.addValueChangeListener(new Property.ValueChangeListener() {
-            private static final long serialVersionUID = 2736306965983131854L;
-            public void valueChange(ValueChangeEvent event) {
-                validator.setPreventInvalidTyping((Boolean)event.getProperty().getValue());
-                
-                // Has to be cleared because the input can currently be invalid.
-                ssn.setValue("");
-            }
+        prevent.addValueChangeListener(event -> {
+            validator.setPreventInvalidTyping((Boolean)event.getProperty().getValue());
+            
+            // Has to be cleared because the input can currently be invalid.
+            ssn.setValue("");
         });
         prevent.setImmediate(true);
         layout.addComponent(prevent);

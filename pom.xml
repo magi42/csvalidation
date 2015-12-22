@@ -12,4 +12,8 @@
 		<module>csvalidation-addon</module>
 		<module>csvalidation-demo</module>
 	</modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
